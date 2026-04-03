@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SpendSmart — Personal Finance Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     ONBOARDING MODAL
+════════════════════════════════════════ -->
+<div class="ob-backdrop hidden" id="obBackdrop">
+  <div class="ob-modal" id="obModal" role="dialog" aria-modal="true">
+
+    <!-- Decorative blobs -->
+    <div class="ob-blob ob-blob1"></div>
+    <div class="ob-blob ob-blob2"></div>
+
+    <!-- Header -->
+    <div class="ob-top">
+      <div class="ob-logo">
+        <div class="ob-logo-icon">💰</div>
+        <span class="ob-logo-name">SpendSmart</span>
+      </div>
+      <button class="ob-close" id="obClose" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="ob-body">
+      <div class="ob-emoji-big">🎉</div>
+      <h2 class="ob-heading">Welcome! Let's set up<br/>your dashboard</h2>
+      <p class="ob-sub">Enter your details so SpendSmart can personalise your experience and track your finances accurately.</p>
+
+      <div class="ob-fields">
+        <!-- Name -->
+        <div class="ob-field">
+          <label class="ob-lbl" for="obName">👤 Your Name</label>
+          <input class="ob-inp" id="obName" type="text" placeholder="Enter your name" autocomplete="off"/>
+        </div>
+        <!-- Salary -->
+        <div class="ob-field">
+          <label class="ob-lbl" for="obSalary">💼 Monthly Salary (₹)</label>
+          <input class="ob-inp" id="obSalary" type="number" placeholder="Enter your monthly salary" min="0" autocomplete="off"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="ob-foot">
+      <button class="ob-btn-skip" id="obSkip">⏭ Skip for now</button>
+      <button class="ob-btn-save" id="obSave">✅ Save &amp; Continue</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-icon">💰</div>
+    <div>
+      <div class="sb-brand-name">SpendSmart</div>
+      <div class="sb-brand-tag">Finance Tracker</div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <a class="sb-link active" onclick="goTo('dashboard',this)">
+      <span class="sb-link-ic">📊</span><span>Dashboard</span>
+    </a>
+    <a class="sb-link" onclick="goTo('transactions',this)">
+      <span class="sb-link-ic">↕️</span><span>Transactions</span>
+    </a>
+    <a class="sb-link" onclick="goTo('budget',this)">
+      <span class="sb-link-ic">🎯</span><span>Budget Goals</span>
+    </a>
+    <a class="sb-link" onclick="goTo('reports',this)">
+      <span class="sb-link-ic">📈</span><span>Reports</span>
+    </a>
+    <a class="sb-link" onclick="goTo('settings',this)">
+      <span class="sb-link-ic">⚙️</span><span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sb-period-box">
+    <div class="sb-period-lbl">Current Period</div>
+    <div class="sb-period-val" id="sbPeriod">—</div>
+  </div>
+
+  <div class="sb-user">
+    <div class="sb-user-av" id="sbAv">?</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name" id="sbName">Guest</div>
+      <div class="sb-user-role">Personal Account</div>
+    </div>
+    <button class="sb-user-edit" onclick="openOnboard()" title="Edit profile">✏️</button>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════ -->
+<div class="app-wrap" id="appWrap">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="topbar-brand">💰 SpendSmart</div>
+
+    <div class="topbar-right">
+      <div class="topbar-profile" id="topAv" title="Profile">?</div>
+      <!-- Dark / Light toggle -->
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark / light mode">
+        <span id="themeIcon">🌙</span>
+      </button>      
+    </div>
+  </header>
+
+  <!-- ══ PAGE: DASHBOARD ══ -->
+  <main class="page active" id="page-dashboard">
+
+    <div class="page-hero">
+      <div>
+        <h1 class="page-title" id="dashHello">Welcome to SpendSmart 👋</h1>
+        <p class="page-sub" id="dashSub">Start tracking your finances today.</p>
+      </div>
+      <button class="btn-cta" onclick="openAddModal()">＋ Add Transaction</button>
+    </div>
+
+    <!-- 4 STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card c-green">
+        <div class="stat-top">
+          <span class="stat-lbl">Total Income</span>
+          <span class="stat-ic">💰</span>
+        </div>
+        <div class="stat-val" id="sIncome">₹0</div>
+        <div class="stat-sub" id="sIncomeC">0 transactions</div>
+        <div class="stat-progress"><div class="stat-prog-fill" id="pIncome"></div></div>
+      </div>
+
+      <div class="stat-card c-rose">
+        <div class="stat-top">
+          <span class="stat-lbl">Total Expenses</span>
+          <span class="stat-ic">💸</span>
+        </div>
+        <div class="stat-val" id="sExpense">₹0</div>
+        <div class="stat-sub" id="sExpenseC">0 transactions</div>
+        <div class="stat-progress"><div class="stat-prog-fill" id="pExpense"></div></div>
+      </div>
+
+      <div class="stat-card c-amber">
+        <div class="stat-top">
+          <span class="stat-lbl">Net Balance</span>
+          <span class="stat-ic">📊</span>
+        </div>
+        <div class="stat-val" id="sBalance">₹0</div>
+        <div class="stat-sub">income − expenses</div>
+        <div class="stat-progress"><div class="stat-prog-fill" id="pBalance"></div></div>
+      </div>
+
+      <div class="stat-card c-indigo">
+        <div class="stat-top">
+          <span class="stat-lbl">Savings Rate</span>
+          <span class="stat-ic">📈</span>
+        </div>
+        <div class="stat-val" id="sSavings">0%</div>
+        <div class="stat-sub">of income saved</div>
+        <div class="stat-progress"><div class="stat-prog-fill" id="pSavings"></div></div>
+      </div>
+    </div>
+
+    <!-- CHART + QUICK ADD -->
+    <div class="mid-row">
+
+      <!-- Donut chart -->
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-title">Spending Breakdown</div>
+            <div class="card-sub" id="chartPeriod">by category</div>
+          </div>
+          <div class="spent-badge" id="spentBadge">₹0 spent</div>
+        </div>
+        <div class="chart-wrap">
+          <div class="donut-pos">
+            <svg id="donutDash" viewBox="0 0 220 220" width="164" height="164">
+              <circle cx="110" cy="110" r="76" fill="none" stroke="var(--track-color)" stroke-width="28"/>
+            </svg>
+            <div class="donut-mid">
+              <div class="donut-val" id="donutTop">—</div>
+              <div class="donut-hint-txt">top</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="dashLegend">
+            <div class="leg-empty">Add expenses to see chart</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick add form -->
+      <div class="card form-card">
+        <div class="card-title">Quick Add</div>
+
+        <div class="type-toggle">
+          <button class="tt-btn active exp" id="qExpBtn" onclick="setType('expense','q')">💸 Expense</button>
+          <button class="tt-btn inc"        id="qIncBtn" onclick="setType('income','q')">💰 Income</button>
+        </div>
+
+        <div class="fgrid">
+          <div class="frow full">
+            <label class="flbl" for="qDesc">Description</label>
+            <input class="finp" id="qDesc" placeholder="e.g. Lunch at cafe…" autocomplete="off"/>
+          </div>
+          <div class="frow">
+            <label class="flbl" for="qAmt">Amount (₹)</label>
+            <input class="finp" id="qAmt" type="number" min="0" placeholder="0"/>
+          </div>
+          <div class="frow">
+            <label class="flbl" for="qCat">Category</label>
+            <select class="finp" id="qCat"></select>
+          </div>
+          <div class="frow full">
+            <label class="flbl" for="qDate">Date</label>
+            <input class="finp" id="qDate" type="date"/>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="addTxn('q')">＋ Add Transaction</button>
+      </div>
+    </div>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">Recent Transactions</div>
+        <span class="count-tag" id="dashCnt">0 entries</span>
+      </div>
+      <div class="txn-scroll" id="dashList">
+        <div class="empty-box">
+          <div class="empty-ico">📭</div>
+          <div class="empty-title">No transactions yet</div>
+          <div class="empty-text">Add your first transaction using the form above!</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer card" role="contentinfo" aria-label="Footer">
+      <div class="site-footer-inner">© 2025 sarika.kohli.dev@gmail.com | All Rights Reserved | Terms • Privacy</div>
+    </footer>
+
+    </main>
+
+  <!-- ══ PAGE: TRANSACTIONS ══ -->
+  <main class="page" id="page-transactions">
+    <div class="page-hero">
+      <div>
+        <h1 class="page-title">All Transactions</h1>
+        <p class="page-sub">Your complete income &amp; expense history</p>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-cta"     onclick="openAddModal()">＋ Add</button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-pills">
+        <button class="fpill active" onclick="setFilter('all',this)">All</button>
+        <button class="fpill"        onclick="setFilter('income',this)">Income</button>
+        <button class="fpill"        onclick="setFilter('expense',this)">Expense</button>
+      </div>
+      <div class="search-row">
+        <input  class="search-inp" id="txSearch"    placeholder="🔍  Search…"      oninput="renderTxns()"/>
+        <select class="search-inp" id="txCatFilter" onchange="renderTxns()" style="max-width:150px"></select>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="txn-scroll-full" id="txList"></div>
+    </div>
+  </main>
+
+  <!-- ══ PAGE: BUDGET ══ -->
+  <main class="page" id="page-budget">
+    <div class="page-hero">
+      <div>
+        <h1 class="page-title">Budget Goals</h1>
+        <p class="page-sub">Set limits and monitor your monthly spending</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:20px">💳 Monthly Budget</div>
+        <div class="budget-set-row">
+          <div class="frow" style="flex:1">
+            <label class="flbl">Total Budget (₹)</label>
+            <input class="finp" id="budgetInp" type="number" placeholder="e.g. 30000"/>
+          </div>
+          <button class="btn-cta" style="flex-shrink:0;align-self:flex-end" onclick="saveBudget()">Set</button>
+        </div>
+        <div id="budgetView"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:20px">🏷️ By Category</div>
+        <div id="catBudget"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title" style="margin-bottom:16px">🕐 Last 7 Transactions</div>
+      <div id="weekList"></div>
+    </div>
+  </main>
+
+  <!-- ══ PAGE: REPORTS ══ -->
+  <main class="page" id="page-reports">
+    <div class="page-hero">
+      <div>
+        <h1 class="page-title">Reports &amp; Insights</h1>
+        <p class="page-sub">Visual overview of your financial habits</p>
+      </div>
+      <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Expenses by Category</div>
+        <div class="card-sub" style="margin-bottom:16px">Pie / donut chart</div>
+        <div class="chart-wrap">
+          <div class="donut-pos">
+            <svg id="donutRep" viewBox="0 0 220 220" width="164" height="164">
+              <circle cx="110" cy="110" r="76" fill="none" stroke="var(--track-color)" stroke-width="28"/>
+            </svg>
+            <div class="donut-mid">
+              <div class="donut-val" id="repTotal">₹0</div>
+              <div class="donut-hint-txt">total</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="repLegend"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Income vs Expenses</div>
+        <div class="card-sub" style="margin-bottom:16px">Monthly comparison</div>
+        <div id="barChart"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title" style="margin-bottom:16px">🏆 Top Spending Categories</div>
+      <div id="topCats"></div>
+    </div>
+  </main>
+
+  <!-- ══ PAGE: SETTINGS ══ -->
+  <main class="page" id="page-settings">
+    <div class="page-hero">
+      <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-sub">Manage your account, categories &amp; data</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:20px">👤 Account</div>
+        <div class="fgrid">
+          <div class="frow full">
+            <label class="flbl">Display Name</label>
+            <input class="finp" id="accName" placeholder="Your name"/>
+          </div>
+          <div class="frow full">
+            <label class="flbl">Currency</label>
+            <select class="finp" id="accCur">
+              <option value="₹">₹  Indian Rupee</option>
+              <option value="$">$  US Dollar</option>
+              <option value="€">€  Euro</option>
+              <option value="£">£  British Pound</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-cta" style="margin-top:10px" onclick="saveAccount()">Save Account</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:20px">🏷️ Categories</div>
+        <div class="fgrid">
+          <div class="frow">
+            <label class="flbl">Name</label>
+            <input class="finp" id="newCatName" placeholder="e.g. Travel"/>
+          </div>
+          <div class="frow">
+            <label class="flbl">Emoji</label>
+            <input class="finp" id="newCatEmoji" placeholder="✈️" maxlength="2"/>
+          </div>
+        </div>
+        <button class="btn-cta" style="margin-top:10px;margin-bottom:18px" onclick="addCat()">Add Category</button>
+        <div id="catsList"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title" style="margin-bottom:14px">🗄️ Data Management</div>
+      <div class="data-btns">
+        <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-danger"  onclick="clearData()">🗑️ Clear All Data</button>
+      </div>
+    </div>
+  </main>
+
+</div><!-- /app-wrap -->
+
+<!-- ════════════════════════════════════════
+     ADD / EDIT TRANSACTION MODAL
+════════════════════════════════════════ -->
+<div class="add-backdrop" id="addBackdrop" onclick="closeAddBg(event)">
+  <div class="add-modal">
+    <div class="ob-top">
+      <div class="ob-logo">
+        <div class="ob-logo-icon">✏️</div>
+        <span id="addModalTitle" class="ob-logo-name">Add Transaction</span>
+      </div>
+      <button class="ob-close" onclick="closeAddModal()">✕</button>
+    </div>
+
+    <div class="ob-body" style="padding-top:16px">
+      <div class="type-toggle">
+        <button class="tt-btn active exp" id="mExpBtn" onclick="setType('expense','m')">💸 Expense</button>
+        <button class="tt-btn inc"        id="mIncBtn" onclick="setType('income','m')">💰 Income</button>
+      </div>
+
+      <div class="fgrid" style="margin-top:16px">
+        <div class="frow full">
+          <label class="flbl">Description</label>
+          <input class="finp" id="mDesc" placeholder="e.g. Lunch at cafe…" autocomplete="off"/>
+        </div>
+        <div class="frow">
+          <label class="flbl">Amount (₹)</label>
+          <input class="finp" id="mAmt" type="number" min="0" placeholder="0"/>
+        </div>
+        <div class="frow">
+          <label class="flbl">Category</label>
+          <select class="finp" id="mCat"></select>
+        </div>
+        <div class="frow full">
+          <label class="flbl">Date</label>
+          <input class="finp" id="mDate" type="date"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="ob-foot">
+      <button class="ob-btn-skip" onclick="closeAddModal()">Cancel</button>
+      <button class="ob-btn-save" id="mSave" onclick="addTxn('m')">＋ Add Transaction</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FAB — bottom-right (re-opens onboarding)
+════════════════════════════════════════ -->
+<button class="fab" onclick="openOnboard()" title="Edit profile / Re-open setup" aria-label="Edit profile">
+  👤
+</button>
+
+
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
