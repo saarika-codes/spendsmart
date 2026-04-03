@@ -3,7 +3,7 @@
 > A fully client-side expense tracker with interactive charts, budget alerts, and multi-currency support. Built with pure HTML, CSS & JavaScript — no libraries, no backend, no build step.
 
 ## 🌐 Live Demo
-🔗 [View Live →](https://spendsmart.vercel.app) <!-- Vercel deploy ke baad update karna -->
+🔗 https://spendsmart-rust.vercel.app/
 
 ---
 
