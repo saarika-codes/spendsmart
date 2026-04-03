@@ -38,8 +38,11 @@ open index.html
 ## 🗂️ Project Structure
 
 spendsmart/
+
 ├── index.html     # App shell, all pages & modals
+
 ├── style.css      # Full design system (CSS variables, dark mode, components)
+
 └── script.js      # All logic: state, rendering, charts, storage
 
 ---
@@ -57,6 +60,7 @@ spendsmart/
 ## 🙋 Author
 
 **Sarika Kohli** · (https://github.com/saarika-codes)
+
 📧 sarika.kohli.dev@gmail.com
 
 ---
